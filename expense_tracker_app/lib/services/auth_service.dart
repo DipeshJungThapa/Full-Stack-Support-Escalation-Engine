@@ -1,5 +1,6 @@
 // import 'package:shared_preferences.dart'
-import 'package:shared_preferences/shared_preferences.dart'; // This is correct
+// import 'package:shared_preferences/shared_preferences.dart'; // This is correct
+import '../../Providers/auth_provider.dart';
 
 class AuthService {
   static const String _tokenKey = 'auth_token';
