@@ -1,20 +1,56 @@
-# Flutter build files
-expense_tracker_app/build/
-expense_tracker_app/.dart_tool/
-expense_tracker_app/.flutter-plugins
-expense_tracker_app/.flutter-plugins-dependencies
+# Environment
+.env
+.env.local
+.venv
+venv/
 
-# Backend database
-expense_tracker_backend/db.sqlite3
-expense_tracker_backend/.env
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Database
+*.db
+*.sqlite3
+db.sqlite3
+datadump.json
+
+# Flutter
+build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
 
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Misc
-https:/
+# Agent/IDE temp
+.agent/
+
+# Backend (will be separate repo)
+expense_tracker_backend/
