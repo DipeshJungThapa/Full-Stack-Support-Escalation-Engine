@@ -1,33 +1,30 @@
-# Expense Tracker - Flutter + Django
+# Expense Tracker
 
-A complete full-stack expense tracking application built with Flutter (frontend) and Django REST API (backend).
+A full-stack expense tracking application built with Flutter and Django.
 
-## 🎯 Project Overview
+## 🚀 Getting Started
 
-This is a learning project demonstrating:
-- **Mobile Development**: Flutter for cross-platform apps
-- **Backend API**: Django REST Framework with JWT authentication
-- **Database**: SQLite for development
-- **Authentication**: Token-based auth with offline storage
-- **CRUD Operations**: Complete expense management
+This repository contains both frontend and backend code for the expense tracker application.
 
-## 📁 Project Structure
+### Project Structure
 
+- **Frontend**: Flutter mobile app
+- **Backend**: Django REST API
+
+## 📚 Tech Stack
+
+- **Frontend**: Flutter/Dart
+- **Backend**: Django/Python
+- **Database**: PostgreSQL
+- **Authentication**: JWT
+
+## 🔧 Development
+
+Clone the repository and follow setup instructions for each component.
+
+```bash
+git clone <repo-url>
 ```
-expense-tracker/
-├── expense_tracker_backend/    # Django REST API
-│   ├── api/                    # API app (models, views, serializers)
-│   ├── expense_tracker/        # Django settings
-│   ├── manage.py
-│   ├── requirements.txt
-│   └── .gitignore
-│
-├── expense_tracker_app/        # Flutter mobile app
-│   ├── lib/
-│   │   ├── models/            # Data models
-│   │   ├── services/          # API & auth services
-│   │   └── screens/           # UI screens
-│   ├── pubspec.yaml
 │   └── .gitignore
 │
 └── README.md                   # This file
