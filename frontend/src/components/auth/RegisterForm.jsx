@@ -1,85 +1,129 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { ShieldCheck, Mail, Lock, User, UserPlus, AlertCircle } from 'lucide-react';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     first_name: '',
-    last_name: ''
+    last_name: '',
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
       await register(formData);
       navigate('/login');
     } catch (err) {
-      setError('Failed to register. Email might be taken.');
+      setError(err.response?.data?.email?.[0] || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg w-full max-w-md">
-        <h3 className="text-2xl font-bold text-center">Create an account</h3>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mt-4">
-            <label className="block">Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-              onChange={handleChange}
-              required
-            />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full animate-slide-in">
+        <div className="text-center mb-10">
+          <div className="bg-primary-600 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-600/20">
+            <ShieldCheck className="text-white w-7 h-7" />
           </div>
-          <div className="mt-4">
-            <label className="block">First Name</label>
-            <input
-              type="text"
-              name="first_name"
-              placeholder="First Name"
-              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block">Last Name</label>
-            <input
-              type="text"
-              name="last_name"
-              placeholder="Last Name"
-              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-              onChange={handleChange}
-            />
-          </div>
-          <div className="mt-4">
-            <label className="block">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="flex items-baseline justify-between mt-4">
-            <button className="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900">Register</button>
-            <Link to="/login" className="text-sm text-blue-600 hover:underline">Login</Link>
-          </div>
-        </form>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Create Account</h1>
+          <p className="text-slate-500 mt-2 font-medium italic">Join the EscalatePro support team</p>
+        </div>
+
+        <div className="premium-card p-10 bg-white">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-rose-50 border border-rose-100 text-rose-600 p-4 rounded-xl text-xs font-bold flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">First Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 w-4 h-4" />
+                  <input
+                    type="text"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 pl-10 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all opacity-last-row"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">Last Name</label>
+                <input
+                  type="text"
+                  value={formData.last_name}
+                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all opacity-last-row"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all opacity-last-row"
+                  placeholder="name@company.com"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                <input
+                  type="password"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all opacity-last-row"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary-600 text-white rounded-xl py-3.5 font-bold hover:bg-primary-700 transition-all shadow-lg shadow-primary-600/20 flex items-center justify-center gap-2 group disabled:opacity-50"
+            >
+              {loading ? 'Creating Account...' : (
+                <>
+                  Register for System
+                  <UserPlus className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="text-center mt-8 text-slate-400 text-xs font-bold uppercase tracking-tighter">
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary-600 hover:underline">Sign In</Link>
+          </p>
+        </div>
       </div>
     </div>
   );

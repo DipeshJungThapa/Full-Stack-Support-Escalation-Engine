@@ -1,7 +1,8 @@
 from rest_framework import viewsets, permissions, status, decorators
 from rest_framework.response import Response
-from .models import Ticket, TicketComment
-from .serializers import TicketSerializer, TicketCommentSerializer
+from .models import Ticket, TicketComment, EscalationRule
+from .serializers import TicketSerializer, TicketCommentSerializer, EscalationRuleSerializer
+from .services import TicketStatusService
 from apps.authentication.permissions import IsAgent, IsAdmin
 
 class TicketViewSet(viewsets.ModelViewSet):
@@ -47,12 +48,21 @@ class TicketViewSet(viewsets.ModelViewSet):
         ticket = self.get_object()
         new_status = request.data.get('status')
         
-        # Validation logic (Level 3 State Machine will improve this)
-        if new_status in Ticket.Status.values:
-            ticket.status = new_status
-            ticket.save()
+        success, message = TicketStatusService.change_status(ticket, new_status, request.user)
+        if success:
             return Response(TicketSerializer(ticket).data)
-        return Response({'error': 'Invalid status'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'error': message}, status=status.HTTP_400_BAD_REQUEST)
+
+    @decorators.action(detail=False, methods=['post'], permission_classes=[IsAdmin])
+    def scan_escalations(self, request):
+        """Manually trigger the escalation rules. Useful for testing without Celery."""
+        from .tasks import check_for_escalations
+        # We run the logic synchronously here for the response
+        tickets_updated = check_for_escalations()
+        return Response({
+            'message': f'Scan complete. {tickets_updated} tickets were escalated.',
+            'count': tickets_updated
+        })
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -68,7 +78,14 @@ class CommentViewSet(viewsets.ModelViewSet):
         return TicketComment.objects.none()
 
     def perform_create(self, serializer):
-        # Needs ticket_id passed in body or URL
-        ticket_id = self.request.data.get('ticket') 
-        # Serializer handles 'author' from context
-        serializer.save(author=self.request.user)
+        comment = serializer.save(author=self.request.user)
+        # Update the ticket's last activity timestamp
+        ticket = comment.ticket
+        from django.utils import timezone
+        ticket.last_activity_at = timezone.now()
+        ticket.save()
+
+class EscalationRuleViewSet(viewsets.ModelViewSet):
+    queryset = EscalationRule.objects.all()
+    serializer_class = EscalationRuleSerializer
+    permission_classes = [IsAdmin]

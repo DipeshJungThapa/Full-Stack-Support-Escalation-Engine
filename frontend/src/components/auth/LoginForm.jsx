@@ -1,57 +1,106 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { ShieldCheck, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
       await login(email, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Failed to login. Please check credentials.');
+      setError(err.response?.data?.detail || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="px-8 py-6 mt-4 text-left bg-white shadow-lg rounded-lg w-full max-w-md">
-        <h3 className="text-2xl font-bold text-center">Login to your account</h3>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mt-4">
-            <label className="block" htmlFor="email">Email</label>
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+      <div className="max-w-md w-full animate-slide-in">
+        <div className="text-center mb-10">
+          <div className="bg-primary-600 w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-600/20">
+            <ShieldCheck className="text-white w-7 h-7" />
           </div>
-          <div className="mt-4">
-            <label className="block" htmlFor="password">Password</label>
-            <input
-              type="password"
-              placeholder="Password"
-              className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          <div className="flex items-baseline justify-between mt-4">
-            <button className="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900">Login</button>
-            <Link to="/register" className="text-sm text-blue-600 hover:underline">Register</Link>
-          </div>
-        </form>
+          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h1>
+          <p className="text-slate-500 mt-2 font-medium italic">Sign in to your EscalatePro account</p>
+        </div>
+
+        <div className="premium-card p-10 bg-white">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="bg-rose-50 border border-rose-100 text-rose-600 p-4 rounded-xl text-xs font-bold flex items-center gap-3">
+                <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all opacity-last-row"
+                  placeholder="name@company.com"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between px-1">
+                <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Password</label>
+                <a href="#" className="text-[10px] font-extrabold text-primary-600 uppercase tracking-widest hover:underline">Forgot?</a>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all opacity-last-row"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary-600 text-white rounded-xl py-3.5 font-bold hover:bg-primary-700 transition-all shadow-lg shadow-primary-600/20 flex items-center justify-center gap-2 group disabled:opacity-50"
+            >
+              {loading ? 'Authenticating...' : (
+                <>
+                  Login to System
+                  <LogIn className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <p className="text-center mt-8 text-slate-400 text-xs font-bold uppercase tracking-tighter">
+            Don't have an account?{' '}
+            <Link to="/register" className="text-primary-600 hover:underline">Request Access</Link>
+          </p>
+        </div>
+
+        <p className="text-center mt-10 text-slate-400 text-[10px] uppercase font-bold tracking-[0.2em]">
+          &copy; 2026 EscalatePro Internal Systems
+        </p>
       </div>
     </div>
   );

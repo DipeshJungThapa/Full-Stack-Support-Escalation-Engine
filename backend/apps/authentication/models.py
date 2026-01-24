@@ -16,7 +16,7 @@ class User(AbstractUser):
 
     # Use email as the username field
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']  # Keep username required for creating superuser, or remove if we want pure email auth
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email

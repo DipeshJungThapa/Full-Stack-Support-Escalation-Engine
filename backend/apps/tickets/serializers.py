@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ticket, TicketComment
+from .models import Ticket, TicketComment, EscalationRule
 
 class TicketCommentSerializer(serializers.ModelSerializer):
     author_email = serializers.EmailField(source='author.email', read_only=True)
@@ -28,3 +28,8 @@ class TicketSerializer(serializers.ModelSerializer):
         # Assign creator from context
         validated_data['created_by'] = self.context['request'].user
         return super().create(validated_data)
+
+class EscalationRuleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EscalationRule
+        fields = '__all__'

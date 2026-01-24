@@ -22,20 +22,29 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const response = await api.post('/auth/login/', { email, password });
-    setUser(response.data);
-    return response.data;
+    const response = await api.post('/auth/token/', { email, password });
+    const { access, refresh } = response.data;
+    localStorage.setItem('access_token', access);
+    localStorage.setItem('refresh_token', refresh);
+
+    // Fetch user details
+    const userResponse = await api.get('/auth/me/');
+    setUser(userResponse.data);
+    return userResponse.data;
   };
 
   const register = async (userData) => {
     const response = await api.post('/auth/register/', userData);
-    // Automatically login or require separate login
-    // For now, let's require separate login or just auto login if backend supported it (backend doesn't auto login on register currently)
     return response.data;
   };
 
   const logout = async () => {
-    await api.post('/auth/logout/');
+    // Session logout (optional since using JWT)
+    try {
+      await api.post('/auth/logout/');
+    } catch (e) { }
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     setUser(null);
   };
 

@@ -66,3 +66,17 @@ class TicketComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author} on {self.ticket}"
+
+class EscalationRule(models.Model):
+    name = models.CharField(max_length=100)
+    priority_threshold = models.CharField(
+        max_length=10,
+        choices=Ticket.Priority.choices
+    )
+    max_idle_hours = models.IntegerField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name

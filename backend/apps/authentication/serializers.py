@@ -12,5 +12,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'email', 'password', 'role', 'first_name', 'last_name')
 
     def create(self, validated_data):
+        # Ensure username is set to email to avoid unique constraint issues
+        if 'email' in validated_data:
+            validated_data['username'] = validated_data['email']
         validated_data['password'] = make_password(validated_data.get('password'))
         return super(UserSerializer, self).create(validated_data)

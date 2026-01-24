@@ -8,6 +8,7 @@ import TicketList from './components/tickets/TicketList';
 import TicketForm from './components/tickets/TicketForm';
 import TicketDetail from './components/tickets/TicketDetail';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Layout from './components/layout/Layout';
 
 function App() {
   return (
@@ -20,7 +21,19 @@ function App() {
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <DashboardRouter />
+                <Layout>
+                  <DashboardRouter />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <TicketList />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -28,7 +41,9 @@ function App() {
             path="/tickets/:id"
             element={
               <ProtectedRoute>
-                <TicketDetail />
+                <Layout>
+                  <TicketDetail />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -36,7 +51,9 @@ function App() {
             path="/tickets/new"
             element={
               <ProtectedRoute>
-                <TicketForm />
+                <Layout>
+                  <TicketForm />
+                </Layout>
               </ProtectedRoute>
             }
           />
