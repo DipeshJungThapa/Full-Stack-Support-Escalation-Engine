@@ -14,7 +14,9 @@ import {
   User,
   Calendar,
   Tag,
-  Hash
+  Hash,
+  FileIcon,
+  Download
 } from 'lucide-react';
 
 const TicketDetail = () => {
@@ -177,6 +179,33 @@ const TicketDetail = () => {
             <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-wrap">
               {ticket.description}
             </p>
+
+            {/* Ticket Attachments */}
+            {ticket.attachments && ticket.attachments.length > 0 && (
+              <div className="mt-10 pt-8 border-t border-slate-100">
+                <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4">Original Attachments</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {ticket.attachments.map((file) => (
+                    <a
+                      key={file.id}
+                      href={file.file}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="border border-slate-200 rounded-xl p-4 flex items-center gap-4 bg-white hover:border-primary-200 hover:shadow-md transition-all group flex-1"
+                    >
+                      <div className="bg-primary-50 p-2.5 rounded-xl text-primary-500 group-hover:bg-primary-600 group-hover:text-white transition-colors">
+                        <FileIcon className="w-5 h-5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-700 truncate">{file.file_name}</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase">{(file.file_size / 1024).toFixed(1)} KB</p>
+                      </div>
+                      <Download className="w-4 h-4 text-slate-300 group-hover:text-primary-600 transition-colors" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <CommentSection ticketId={ticket.id} />
@@ -215,6 +244,15 @@ const TicketDetail = () => {
                     className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white rounded-xl py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-black transition-all"
                   >
                     Close Ticket
+                  </button>
+                )}
+
+                {(ticket.status === 'IN_PROGRESS' || ticket.status === 'ESCALATED') && isAgent && (
+                  <button
+                    onClick={() => handleStatusChange('OPEN')}
+                    className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-600 rounded-xl py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                    Move back to Open
                   </button>
                 )}
 

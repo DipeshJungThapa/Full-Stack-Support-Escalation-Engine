@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,6 +21,18 @@ const LoginForm = () => {
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.detail || 'Invalid email or password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      await googleLogin(credentialResponse.credential);
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Google Sign-In failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -37,6 +50,23 @@ const LoginForm = () => {
         </div>
 
         <div className="premium-card p-10 bg-white">
+          <div className="mb-8 flex flex-col items-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google Authentication Failed')}
+              theme="filled_blue"
+              shape="pill"
+              width="350"
+              text="continue_with"
+              use_fedcm_for_prompt={false}
+            />
+            <div className="w-full flex items-center gap-4 my-6">
+              <div className="h-px bg-slate-100 flex-1" />
+              <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">OR</span>
+              <div className="h-px bg-slate-100 flex-1" />
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-rose-50 border border-rose-100 text-rose-600 p-4 rounded-xl text-xs font-bold flex items-center gap-3">
@@ -63,7 +93,7 @@ const LoginForm = () => {
             <div className="space-y-2">
               <div className="flex justify-between px-1">
                 <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Password</label>
-                <a href="#" className="text-[10px] font-extrabold text-primary-600 uppercase tracking-widest hover:underline">Forgot?</a>
+                <Link to="/forgot-password" size="tiny" className="text-[10px] font-extrabold text-primary-600 uppercase tracking-widest hover:underline">Forgot?</Link>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import api from '../../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, FileText, AlertTriangle, Send, ChevronLeft } from 'lucide-react';
+import { AlertCircle, AlertTriangle, ChevronLeft, FileIcon, FileText, Paperclip, Plus, Send, ShieldCheck, Upload, X } from 'lucide-react';
+import { validateAndFilterFiles } from '../../utils/fileUtils';
 
 const TicketForm = () => {
   const [formData, setFormData] = useState({
@@ -9,17 +10,56 @@ const TicketForm = () => {
     description: '',
     priority: 'MEDIUM',
   });
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleFileChange = (e) => {
+    const { files: validFiles, oversizedFiles } = validateAndFilterFiles(e.target.files, files);
+    if (oversizedFiles.length > 0) {
+      alert(`The following files exceed the 10MB limit and were not added: ${oversizedFiles.join(', ')}`);
+    }
+    setFiles(validFiles);
+  };
+
+  const removeFile = (index) => {
+    setFiles(files.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    let ticketId = null;
     try {
-      await api.post('/tickets/', formData);
-      navigate('/dashboard');
+      // 1. Create the ticket
+      const ticketResponse = await api.post('/tickets/', formData);
+      ticketId = ticketResponse.data.id;
+
+      // 2. Upload attachments if any
+      if (files.length > 0) {
+        const failedUploads = [];
+        for (const file of files) {
+          try {
+            const fileData = new FormData();
+            fileData.append('file', file);
+            fileData.append('ticket', ticketId);
+            await api.post('/attachments/', fileData, {
+              headers: { 'Content-Type': 'multipart/form-data' }
+            });
+          } catch (uploadError) {
+            console.error('Failed to upload attachment:', file.name, uploadError);
+            failedUploads.push(file.name);
+          }
+        }
+        if (failedUploads.length > 0) {
+          alert(`Ticket created, but some attachments failed: ${failedUploads.join(', ')}`);
+        }
+      }
+
+      navigate(`/tickets/${ticketId}`);
     } catch (error) {
       console.error('Error creating ticket:', error);
+      alert('Failed to create ticket. Please check your connection or try again.');
     } finally {
       setLoading(false);
     }
@@ -86,6 +126,52 @@ const TicketForm = () => {
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 required
               />
+            </div>
+
+            {/* File Upload Section */}
+            <div className="space-y-2">
+              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1 flex items-center gap-2">
+                <Paperclip className="w-3.5 h-3.5" /> Attachments
+              </label>
+              <div className="border-2 border-dashed border-slate-200 rounded-xl p-6 bg-slate-50/50 hover:bg-slate-50 transition-colors group cursor-pointer"
+                onClick={() => fileInputRef.current.click()}>
+                <input
+                  type="file"
+                  multiple
+                  ref={fileInputRef}
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <div className="flex flex-col items-center gap-2">
+                  <Upload className="w-8 h-8 text-slate-300 group-hover:text-primary-400 transition-colors" />
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Click to upload files</p>
+                  <p className="text-[10px] text-slate-400 font-medium">Maximum size: 10MB per file</p>
+                </div>
+              </div>
+
+              {files.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                  {files.map((file, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl shadow-sm animate-slide-in">
+                      <div className="flex items-center gap-3 overflow-hidden">
+                        <div className="bg-primary-50 text-primary-600 p-2 rounded-lg font-bold text-[10px] uppercase">
+                          {file.name.split('.').pop()}
+                        </div>
+                        <div className="truncate">
+                          <p className="text-xs font-bold text-slate-700 truncate leading-none mb-1">{file.name}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); removeFile(idx); }}
+                        className="p-1 px-1.5 hover:bg-rose-50 hover:text-rose-600 rounded-lg text-slate-300 transition-all ml-1.5"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

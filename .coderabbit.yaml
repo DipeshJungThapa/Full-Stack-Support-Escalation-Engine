@@ -1,0 +1,29 @@
+# CodeRabbit Configuration
+# Documentation: https://docs.coderabbit.ai/getting-started/configure-coderabbit
+
+reviews:
+  profile: "chill" # Options: chill, inquisitive, meticulous. 'chill' is good for beginners.
+  request_reviews_from_completions: true
+  high_level_summary: true
+  auto_review:
+    enabled: true
+    drafts: false
+  tools:
+    github_checks:
+      enabled: true
+
+# Instructions tailored for our Support Escalation Engine
+instructions: >
+  This is a Ticket Escalation System (EscalatePro). 
+  - Backend: Django with DRF. 
+  - Frontend: React with Tailwind.
+  Ensure code follows the State Machine logic for tickets: OPEN -> IN_PROGRESS -> ESCALATED/RESOLVED -> CLOSED.
+  Pay close attention to user role permissions (Admin, Agent, User). 
+  Check that sensitive data is not logged.
+
+knowledge_base:
+  - path: "PRD.md"
+  - path: "CHANGELOG.md"
+
+chat:
+  enabled: true

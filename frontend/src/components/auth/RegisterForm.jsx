@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShieldCheck, Mail, Lock, User, UserPlus, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, User, UserPlus, AlertCircle, Users } from 'lucide-react';
+import { GoogleLogin } from '@react-oauth/google';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -9,10 +10,11 @@ const RegisterForm = () => {
     password: '',
     first_name: '',
     last_name: '',
+    role: 'USER',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -24,6 +26,18 @@ const RegisterForm = () => {
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.email?.[0] || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setLoading(true);
+      await googleLogin(credentialResponse.credential);
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Google Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -41,6 +55,23 @@ const RegisterForm = () => {
         </div>
 
         <div className="premium-card p-10 bg-white">
+          <div className="mb-8 flex flex-col items-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError('Google Authentication Failed')}
+              useOneTap
+              theme="filled_blue"
+              shape="pill"
+              width="350"
+              text="signup_with"
+            />
+            <div className="w-full flex items-center gap-4 my-6">
+              <div className="h-px bg-slate-100 flex-1" />
+              <span className="text-[10px] font-extrabold text-slate-300 uppercase tracking-widest">OR</span>
+              <div className="h-px bg-slate-100 flex-1" />
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="bg-rose-50 border border-rose-100 text-rose-600 p-4 rounded-xl text-xs font-bold flex items-center gap-3">
@@ -102,6 +133,22 @@ const RegisterForm = () => {
                   placeholder="••••••••"
                   required
                 />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">Account Role</label>
+              <div className="relative">
+                <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
+                <select
+                  value={formData.role}
+                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all appearance-none shadow-sm"
+                >
+                  <option value="USER">Standard User (Customer)</option>
+                  <option value="AGENT">Support Agent</option>
+                  <option value="ADMIN">System Administrator</option>
+                </select>
               </div>
             </div>
 

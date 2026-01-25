@@ -34,6 +34,10 @@ Tickets follow a strict workflow to prevent logical errors:
 - **Live Stats:** Real-time counters for ticket volume and resolution rates.
 - **Short-IDs:** UUID-based tickets displayed as readable 8-character headers.
 
+### Level 6: Production Mastery
+- **Real File Uploads:** Use Supabase Storage for actual attachments on tickets/comments.
+- **Email Alerts:** (System Extension) Automated notifications for escalations.
+
 ## 4. Technical Stack
 - **Backend:** Python (Django + Django REST Framework)
 - **Frontend:** React (Vite + Tailwind CSS + Lucide Icons)

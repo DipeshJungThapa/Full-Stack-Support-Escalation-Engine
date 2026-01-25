@@ -1,7 +1,12 @@
 from rest_framework import viewsets, permissions, status, decorators
 from rest_framework.response import Response
-from .models import Ticket, TicketComment, EscalationRule
-from .serializers import TicketSerializer, TicketCommentSerializer, EscalationRuleSerializer
+from .models import Ticket, TicketComment, EscalationRule, Attachment
+from .serializers import (
+    TicketSerializer, 
+    TicketCommentSerializer, 
+    EscalationRuleSerializer,
+    AttachmentSerializer
+)
 from .services import TicketStatusService
 from apps.authentication.permissions import IsAgent, IsAdmin
 
@@ -89,3 +94,16 @@ class EscalationRuleViewSet(viewsets.ModelViewSet):
     queryset = EscalationRule.objects.all()
     serializer_class = EscalationRuleSerializer
     permission_classes = [IsAdmin]
+
+class AttachmentViewSet(viewsets.ModelViewSet):
+    queryset = Attachment.objects.all()
+    serializer_class = AttachmentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        file_obj = self.request.data.get('file')
+        serializer.save(
+            uploaded_by=self.request.user,
+            file_name=file_obj.name,
+            file_size=file_obj.size
+        )

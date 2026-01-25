@@ -3,8 +3,8 @@ from .models import Ticket
 class TicketStatusService:
     VALID_TRANSITIONS = {
         Ticket.Status.OPEN: [Ticket.Status.IN_PROGRESS],
-        Ticket.Status.IN_PROGRESS: [Ticket.Status.ESCALATED, Ticket.Status.RESOLVED],
-        Ticket.Status.ESCALATED: [Ticket.Status.IN_PROGRESS, Ticket.Status.RESOLVED],
+        Ticket.Status.IN_PROGRESS: [Ticket.Status.ESCALATED, Ticket.Status.RESOLVED, Ticket.Status.OPEN],
+        Ticket.Status.ESCALATED: [Ticket.Status.IN_PROGRESS, Ticket.Status.RESOLVED, Ticket.Status.OPEN],
         Ticket.Status.RESOLVED: [Ticket.Status.CLOSED],
         Ticket.Status.CLOSED: []
     }

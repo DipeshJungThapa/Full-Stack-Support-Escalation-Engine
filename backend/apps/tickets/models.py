@@ -80,3 +80,32 @@ class EscalationRule(models.Model):
 
     def __str__(self):
         return self.name
+
+class Attachment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    file = models.FileField(upload_to='attachments/%Y/%m/%d/')
+    ticket = models.ForeignKey(
+        Ticket, 
+        on_delete=models.CASCADE, 
+        related_name='attachments', 
+        null=True, 
+        blank=True
+    )
+    comment = models.ForeignKey(
+        TicketComment, 
+        on_delete=models.CASCADE, 
+        related_name='attachments', 
+        null=True, 
+        blank=True
+    )
+    uploaded_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='uploaded_attachments'
+    )
+    file_name = models.CharField(max_length=255)
+    file_size = models.BigIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.file_name
