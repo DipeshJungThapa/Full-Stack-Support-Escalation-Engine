@@ -12,6 +12,7 @@ const TicketForm = () => {
   });
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   const handleFileChange = (e) => {

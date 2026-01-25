@@ -40,27 +40,27 @@ const Stats = () => {
       icon: Ticket,
       color: 'text-primary-600',
       bg: 'bg-primary-50',
-      trend: '+12%',
-      trendUp: true
+      trend: stats.total_trend || '0%',
+      trendUp: !stats.total_trend?.startsWith('-')
     },
     {
       label: 'Open Tickets',
-      value: stats.OPEN + stats.IN_PROGRESS,
+      value: stats.current_open,
       icon: Clock,
       color: 'text-orange-600',
       bg: 'bg-orange-50',
-      trend: '+5%',
-      trendUp: true,
+      trend: stats.open_trend || '0%',
+      trendUp: !stats.open_trend?.startsWith('-'),
       border: 'border-r-4 border-orange-500'
     },
     {
       label: 'Resolved Tickets',
-      value: stats.RESOLVED + stats.CLOSED,
+      value: stats.current_resolved,
       icon: CheckCircle2,
       color: 'text-emerald-600',
       bg: 'bg-emerald-50',
-      trend: '+7%',
-      trendUp: true
+      trend: stats.resolved_trend || '0%',
+      trendUp: !stats.resolved_trend?.startsWith('-')
     },
   ];
 

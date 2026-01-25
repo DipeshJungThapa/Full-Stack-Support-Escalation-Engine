@@ -10,7 +10,7 @@ import {
   Bell,
   Search,
   User,
-  ShieldCheck
+  ShieldCheck,
 } from 'lucide-react';
 
 const Layout = ({ children }) => {
@@ -62,7 +62,19 @@ const Layout = ({ children }) => {
           </nav>
         </div>
 
-        <div className="mt-auto p-6 border-t border-slate-100">
+        <div className="mt-auto p-6 space-y-4">
+          <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+            <div className="w-9 h-9 bg-white rounded-full flex items-center justify-center border border-slate-200">
+              <User className="text-slate-400 w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-slate-900 truncate">
+                {user?.email?.split('@')[0]}
+              </p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{user?.role}</p>
+            </div>
+          </div>
+
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors w-full"
@@ -75,21 +87,6 @@ const Layout = ({ children }) => {
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Navbar */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-end px-8 z-10">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3 pl-6 border-slate-200">
-              <div className="text-right">
-                <p className="text-sm font-semibold text-slate-900">{user?.email?.split('@')[0]}</p>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{user?.role}</p>
-              </div>
-              <div className="w-9 h-9 bg-slate-100 rounded-full flex items-center justify-center border border-slate-200">
-                <User className="text-slate-400 w-5 h-5" />
-              </div>
-            </div>
-          </div>
-        </header>
-
         {/* Page Content */}
         <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
           <div className="max-w-7xl mx-auto animate-slide-in">

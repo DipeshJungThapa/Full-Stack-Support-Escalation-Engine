@@ -136,21 +136,7 @@ const RegisterForm = () => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest px-1">Account Role</label>
-              <div className="relative">
-                <Users className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 w-5 h-5" />
-                <select
-                  value={formData.role}
-                  onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 transition-all appearance-none shadow-sm"
-                >
-                  <option value="USER">Standard User (Customer)</option>
-                  <option value="AGENT">Support Agent</option>
-                  <option value="ADMIN">System Administrator</option>
-                </select>
-              </div>
-            </div>
+            {/* Role selector removed for production security */}
 
             <button
               type="submit"
