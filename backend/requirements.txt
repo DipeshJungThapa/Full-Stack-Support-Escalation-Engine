@@ -14,3 +14,4 @@ django-allauth
 dj-rest-auth
 cryptography
 gunicorn
+whitenoise
