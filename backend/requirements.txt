@@ -13,3 +13,4 @@ django-storages
 django-allauth
 dj-rest-auth
 cryptography
+gunicorn
