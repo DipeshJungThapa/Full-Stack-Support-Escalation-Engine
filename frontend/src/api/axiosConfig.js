@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
 
@@ -34,18 +34,18 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     // Only attempt refresh for 401 errors on authenticated routes
     if (error.response?.status === 401 && !originalRequest._retry) {
       const refreshToken = localStorage.getItem('refresh_token');
-      
+
       // No refresh token available, clear and reject
       if (!refreshToken) {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         return Promise.reject(error);
       }
-      
+
       if (isRefreshing) {
         // Wait for the refresh to complete
         return new Promise((resolve, reject) => {
@@ -55,19 +55,19 @@ api.interceptors.response.use(
           return api(originalRequest);
         }).catch(err => Promise.reject(err));
       }
-      
+
       originalRequest._retry = true;
       isRefreshing = true;
-      
+
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'}/auth/token/refresh/`,
+          `${import.meta.env.VITE_API_BASE_URL}/auth/token/refresh/`,
           { refresh: refreshToken }
         );
-        
+
         const { access } = response.data;
         localStorage.setItem('access_token', access);
-        
+
         processQueue(null, access);
         originalRequest.headers.Authorization = `Bearer ${access}`;
         return api(originalRequest);
@@ -80,7 +80,7 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
