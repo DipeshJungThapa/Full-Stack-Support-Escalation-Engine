@@ -22,7 +22,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['localhost', '127.0.0.1', '.render.com'])
+ALLOWED_HOSTS = ['*']
 
 SITE_DOMAIN = env('SITE_DOMAIN', default='localhost:8000')
 SITE_NAME = env('SITE_NAME', default='EscalatePro')
