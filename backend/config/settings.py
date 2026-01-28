@@ -191,6 +191,12 @@ CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[
 
 CORS_ALLOW_CREDENTIALS = True
 
+# CSRF Trusted Origins for Production
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.vercel.app",
+    "https://*.render.com",
+]
+
 # REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
